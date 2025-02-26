@@ -2,6 +2,7 @@ package etcd
 
 import (
 	"LogPro/configLearn/common"
+	"LogPro/configLearn/tailfile"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -46,4 +47,20 @@ func GetConf(key string) (collectEntryList []*common.CollectEntry, err error) {
 		return
 	}
 	return
+}
+
+func WatchConf(key string) {
+	var newConf []*common.CollectEntry
+	watchChan := cli.Watch(context.Background(), key)
+	for watchResponse := range watchChan {
+		for _, event := range watchResponse.Events {
+			fmt.Printf("type:%s key:%s event:%#v\n", event.Type, event.Kv.Key, event.Kv.Value)
+			err := json.Unmarshal(event.Kv.Value, &newConf)
+			if err != nil {
+				logrus.Errorf("json unmarshal failed, err:%v\n", err)
+				continue
+			}
+			tailfile.SendNewConf(newConf)
+		}
+	}
 }

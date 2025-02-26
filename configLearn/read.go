@@ -72,6 +72,9 @@ func main() {
 	if err != nil {
 		logrus.Errorf("get conf from etcd failed,err:%v", err)
 	}
+	//监控并管理etcd中的日志配置项，有新增的就自动启动一个
+	go etcd.WatchConf(configObj.EtcdConfig.CollectKey) //不能阻塞，所以需要用goroutine
+
 	err = tailfile.Init(allConf)
 
 	//加载tail

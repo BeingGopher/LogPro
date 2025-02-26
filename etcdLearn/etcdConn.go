@@ -23,7 +23,8 @@ func main() {
 
 	////写入数据
 	ctx := context.Background()
-	str := "[{\"path\":\"D:/gitDoc/LogPro/configLearn/log/logs.log\",\"topic\":\"test\"},{\"path\":\"D:/gitDoc/LogPro/configLearn/log/logs1.log\",\"topic\":\"test1\"}]"
+	//str := "[{\"path\":\"D:/gitDoc/LogPro/configLearn/log/logs.log\",\"topic\":\"test\"},{\"path\":\"D:/gitDoc/LogPro/configLearn/log/logs1.log\",\"topic\":\"test1\"}]"
+	str := "[{\"path\":\"D:/gitDoc/LogPro/configLearn/log/logs.log\",\"topic\":\"test\"},{\"path\":\"D:/gitDoc/LogPro/configLearn/log/logs1.log\",\"topic\":\"test1\"},{\"path\":\"D:/gitDoc/LogPro/configLearn/log/logs2.log\",\"topic\":\"test2\"},{\"path\":\"D:/gitDoc/LogPro/configLearn/log/logs3.log\",\"topic\":\"test3\"}]"
 	_, err = client.Put(ctx, "collect_log_path", str)
 	if err != nil {
 		fmt.Printf("写入数据失败：%v\n", err)

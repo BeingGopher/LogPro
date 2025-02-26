@@ -16,6 +16,10 @@ type tailTask struct {
 	tObj  *tail.Tail
 }
 
+var (
+	confChan chan []*common.CollectEntry
+)
+
 func newTailTask(path string, topic string) *tailTask {
 	tt := &tailTask{
 		path:  path,
@@ -78,10 +82,13 @@ func Init(allConf []*common.CollectEntry) (err error) {
 		logrus.Infof("create tailObj from path:%s success.", conf.Path)
 		go tt.run()
 	}
+	confChan = make(chan []*common.CollectEntry) //做阻塞的通道
 
-	//TailObj, err = tail.TailFile(allConf, config)
-	//if err != nil {
-	//	log.Fatalf("无法打开文件：%v err:", allConf, err)
-	//}
+	newConf := <-confChan //取到值说明新的配置来了
+	logrus.Infof("get new conf from etcd, conf:%v\n", newConf)
 	return
+}
+
+func SendNewConf(newConf []*common.CollectEntry) {
+	confChan <- newConf
 }
