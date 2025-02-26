@@ -38,6 +38,7 @@ func (t *tailTask) Init() (err error) {
 }
 
 func (t *tailTask) run() { //读取日志，发送kafka
+	logrus.Infof("collect for path:%s is running...", t.path)
 	var (
 		lines *tail.Line
 		ok    bool
@@ -74,6 +75,7 @@ func Init(allConf []*common.CollectEntry) (err error) {
 			continue
 		}
 		//收集日志
+		logrus.Infof("create tailObj from path:%s success.", conf.Path)
 		go tt.run()
 	}
 

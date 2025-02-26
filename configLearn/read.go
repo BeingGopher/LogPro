@@ -5,12 +5,8 @@ import (
 	"LogPro/configLearn/kafka"
 	"LogPro/configLearn/tailfile"
 	"fmt"
-	"github.com/IBM/sarama"
-	"github.com/hpcloud/tail"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/ini.v1"
-	"strings"
-	"time"
 )
 
 // 收集指定目录下的日志文件，发送到Kafka
@@ -42,29 +38,10 @@ type EtcdConfig struct {
 //向Kafka发送日志
 
 // 业务逻辑
-func run() (err error) {
-	var (
-		lines *tail.Line
-		ok    bool
-	)
-	for {
-		lines, ok = <-tailfile.TailObj.Lines
-		if !ok {
-			logrus.Warn("tail file reopen, filename:%s\n", tailfile.TailObj.Filename)
-			time.Sleep(1 * time.Second)
-			continue
-		}
-		if len(strings.Trim(lines.Text, "\r")) == 0 { //如果是空行，就不需要读，直接跳
-			continue
-		}
-		//利用chan将同步代码改为异步
-		//把读出来的一行日志包装成Kafka里的msg类型，放到chan中
-		msg := &sarama.ProducerMessage{
-			Topic: "key1",
-			Value: sarama.StringEncoder(lines.Text),
-		}
-		kafka.MsgChan(msg) //取一行写一行,通过函数暴露，而不是暴露对象
 
+func run() {
+	for {
+		select {}
 	}
 }
 
@@ -106,10 +83,5 @@ func main() {
 	logrus.Info("init tail success")
 	//从TailObj中取出日志往Kafka发送，
 	//TailObj --> log --> Producer --> kafka
-	err = run()
-	if err != nil {
-		logrus.Errorf("run failed,err:%v", err)
-		return
-	}
-	fmt.Println(allConf)
+	run() //让程序不会立即结束
 }
