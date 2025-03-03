@@ -50,7 +50,7 @@ func GetConf(key string) (collectEntryList []*common.CollectEntry, err error) {
 }
 
 func WatchConf(key string) {
-	var newConf []*common.CollectEntry
+	var newConf []common.CollectEntry
 	watchChan := cli.Watch(context.Background(), key)
 	for watchResponse := range watchChan {
 		for _, event := range watchResponse.Events {
